@@ -5,10 +5,10 @@ armhf/alpine:latest:
   dockerng.image_present
 
 # Ensure the directory exists.
-/home/pi/docker/ros:
+/home/pi/docker/registry:
   file.directory:
     - makedirs: True
-    
+
 # Clone the Git repo that contains the scripts and files for the registry image.
 https://github.com/docker/distribution-library-image:
   git.latest:
