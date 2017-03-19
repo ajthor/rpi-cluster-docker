@@ -5,7 +5,7 @@ include:
   - docker.registry.images.build
 
 registry:
-  dockerng.runnning:
+  dockerng.running:
     - image: armhf_registry
     - detach: True
     - ports:
