@@ -1,7 +1,7 @@
+# This file builds a local Registry image for ARM.
 
-
-# Make sure we have the latest version of the Alpine ARM image.
-armhf/alpine:latest:
+# Make sure we have the correct version of the Alpine ARM image.
+container4armhf/armhf-alpine:3.4:
   dockerng.image_present
 
 # Ensure the directory exists.
@@ -18,8 +18,8 @@ https://github.com/docker/distribution-library-image.git:
 # Replace the Dockerfile source with an updated FROM line.
 /home/pi/docker/registry/Dockerfile:
   file.replace:
-    - pattern: FROM alpine
-    - repl: FROM armhf/alpine
+    - pattern: FROM alpine:3.4
+    - repl: FROM osrf/ubuntu_armhf:trusty
     - require:
       - git: https://github.com/docker/distribution-library-image.git
 
