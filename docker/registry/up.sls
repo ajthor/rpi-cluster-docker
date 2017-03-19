@@ -1,10 +1,12 @@
 # This file contains scripts for starting a registry image on your cluster.
 # See: https://docs.docker.com/registry/deploying/ for more info.
 
-start-registry:
+- import:
+  - registry.images.build
+
+registry:
   dockerng.runnning:
-    - name: registry
-    - image: registry:2
+    - image: armhf_registry
     - detach: True
     - ports:
       - 5000
