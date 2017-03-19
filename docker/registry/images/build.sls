@@ -20,13 +20,13 @@ https://github.com/docker/distribution-library-image.git:
   file.replace:
     - pattern: FROM alpine
     - repl: FROM armhf/alpine
-    - reguire:
-      - git: https://github.com/docker/distribution-library-image
+    - require:
+      - git: https://github.com/docker/distribution-library-image.git
 
 # Build the image.
 armhf_registry:
   dockerng.image_present:
     - build: /home/pi/docker/registry
     - require:
-      - git: https://github.com/docker/distribution-library-image
+      - git: https://github.com/docker/distribution-library-image.git
       - file: /home/pi/docker/registry/Dockerfile
