@@ -1,7 +1,7 @@
 # This file contains scripts for starting a registry image on your cluster.
 # See: https://docs.docker.com/registry/deploying/ for more info.
 
-- import:
+include:
   - registry.images.build
 
 registry:
