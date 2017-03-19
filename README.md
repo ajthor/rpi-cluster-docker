@@ -6,9 +6,9 @@ Take a look at [rpi-cluster](https://github.com/ajthor/rpi-cluster) for more inf
 
 ## Salt Scripts
 
-This repo contains Salt scripts for configuring Docker and for starting swarm mode on the nodes. See the [wiki](https://github.com/ajthor/rpi-cluster-salt/wiki) for more information.
+This repo contains Salt scripts for configuring Docker and for starting swarm mode on the nodes. See the [wiki](https://github.com/ajthor/rpi-cluster-docker/wiki) for more information.
 
-- [Swarm](https://github.com/ajthor/rpi-cluster-salt/wiki/Swarm)
+- [Swarm](https://github.com/ajthor/rpi-cluster-docker/wiki/Swarm)
 
 ---
 
