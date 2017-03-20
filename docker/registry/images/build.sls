@@ -19,7 +19,7 @@ https://github.com/docker/distribution-library-image.git:
 /home/pi/docker/registry/Dockerfile:
   file.replace:
     - pattern: FROM alpine:3.4
-    - repl: FROM osrf/ubuntu_armhf:trusty
+    - repl: FROM container4armhf/armhf-alpine:3.4
     - require:
       - git: https://github.com/docker/distribution-library-image.git
 
