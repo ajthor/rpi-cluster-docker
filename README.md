@@ -10,8 +10,6 @@ This repo contains Salt scripts for configuring Docker and for starting swarm mo
 
 - [Swarm](https://github.com/ajthor/rpi-cluster-docker/wiki/Swarm)
 
-
-##
 ---
 
 # Contribute
@@ -25,4 +23,4 @@ If you would like to contribute to this project, please fork and pull request. I
 Some things that I would like to see in the future.
 
 - Build local Docker images from scratch, to ensure they work on the local ARM architecture.
-- Create a custom repository image, instead of using the ones from scaleway/hypriot.
+- Create a native repository image, instead of using 'vdavy/registry-arm' or the ones from scaleway/hypriot.
