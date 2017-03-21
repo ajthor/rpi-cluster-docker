@@ -7,5 +7,5 @@ registry:
     - image: vdavy/registry-arm:2.2.0
     - detach: True
     - ports:
-      - 127.0.0.1:5000:5000
+      - 5000
     - restart_policy: always
