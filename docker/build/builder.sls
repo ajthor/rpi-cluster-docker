@@ -5,9 +5,9 @@
     - source: salt://docker/images/builder/Dockerfile
     - makedirs: True
 
-/tmp/docker/builder/docker_entrypoint.sh:
+/tmp/docker/builder/docker-entrypoint.sh:
   file.managed:
-    - source: salt://docker/images/builder/docker_entrypoint.sh
+    - source: salt://docker/images/builder/docker-entrypoint.sh
     - makedirs: True
 
 # Create the Docker builder image.
@@ -16,4 +16,4 @@ builder:latest:
     - build: /tmp/docker/builder
     - require:
       - file: /tmp/docker/builder/Dockerfile
-      - file: /tmp/docker/builder/docker_entrypoint.sh
+      - file: /tmp/docker/builder/docker-entrypoint.sh
