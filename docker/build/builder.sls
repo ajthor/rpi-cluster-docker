@@ -2,12 +2,12 @@
 # Copy the Dockerfile and entrypoint.
 /tmp/docker/builder/Dockerfile:
   file.managed:
-    - source: salt://docker/build/builder/Dockerfile
+    - source: salt://docker/images/builder/Dockerfile
     - makedirs: True
 
 /tmp/docker/builder/docker_entrypoint.sh:
   file.managed:
-    - source: salt://docker/build/builder/docker_entrypoint.sh
+    - source: salt://docker/images/builder/docker_entrypoint.sh
     - makedirs: True
 
 # Create the Docker builder image.
