@@ -10,10 +10,12 @@ armhf/alpine:
 /tmp/docker/update.sh:
   file.managed:
     - source: salt://docker/registry/images/update.sh
+    - mode: 755
 
 /tmp/docker/docker-entrypoint.sh:
   file.managed:
     - source: salt://docker/registry/images/docker-entrypoint.sh
+    - mode: 755
 
 /tmp/docker/Dockerfile:
   file.managed:
