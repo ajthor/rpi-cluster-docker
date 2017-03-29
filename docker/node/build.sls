@@ -1,5 +1,5 @@
 
-{% set node_version = 7.8.0 %}
+{% set node_version = "7.8.0" %}
 
 include:
   - docker.alpine.build
