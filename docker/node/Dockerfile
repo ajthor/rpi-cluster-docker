@@ -16,7 +16,7 @@ RUN addgroup -g 1000 node \
       make \
 
 RUN curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.33.1/install.sh | bash \
-    && nvm install {{ node_version }} \
+    && nvm install {{ version }} \
     && apk del .build-deps
 
 CMD ["node"]

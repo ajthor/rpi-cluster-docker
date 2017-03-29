@@ -14,6 +14,8 @@ include:
   file.managed:
     - source: salt://docker/node/Dockerfile
     - template: jinja
+    - defaults:
+      - version: {{ node_version }}
 
 # Build the image.
 rpi-cluster/node:{{ node_version }}:
