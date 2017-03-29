@@ -16,8 +16,15 @@ rootfs:
   file.managed:
     - source: salt://docker/alpine/Dockerfile
 
-# Build the image. 
+# Build the image.
 rpi-cluster/alpine:3.5.2:
+  dockerng.image_present:
+    - build: /tmp/docker/alpine
+    - require:
+      - cmd: rootfs
+      - file: /tmp/docker/alpine/Dockerfile
+
+rpi-cluster/alpine:latest:
   dockerng.image_present:
     - build: /tmp/docker/alpine
     - require:
