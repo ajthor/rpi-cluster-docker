@@ -26,4 +26,4 @@ rpi-cluster/node:latest:
   dockerng.image_present:
     - build: /tmp/docker/node
     - require:
-      - file: /tmp/docker/{{ folder }}/Dockerfile
+      - file: /tmp/docker/node/Dockerfile
