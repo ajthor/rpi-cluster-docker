@@ -31,9 +31,11 @@ docker-user:
       - pi
 
 # Add pillar data.
-{%- set pillar_files = ['docker.sls', 'images.sls'] -%}
-{%- for file in pillar_files %}
+{%- if grains['host'] == 'rpi-master' -%}
+  {%- set pillar_files = ['docker.sls', 'images.sls'] -%}
+  {%- for file in pillar_files -%}
 /srv/pillar/docker/{{ file }}:
   file.managed:
     - source: salt://pillar/docker/{{ file }}
-{% endfor -%}
+  {%- endfor -%}
+{%- endif -%}
