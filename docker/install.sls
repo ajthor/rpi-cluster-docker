@@ -30,16 +30,18 @@ docker-user:
     - addusers:
       - pi
 
+{%- if grains['host'] == 'rpi-master' -%}
 # Ensure pillar directory exists.
 /srv/pillar/docker:
   file.directory:
     - makedirs: True
 
-# Add pillar data.
-{%- if grains['host'] == 'rpi-master' -%}
-  {%- for file in ['docker.sls', 'images.sls'] -%}
-/srv/pillar/docker/{{ file }}:
+# Add pillar files.
+/srv/pillar/docker/docker.sls:
   file.managed:
-    - source: salt://pillar/docker/{{ file }}
-  {%- endfor -%}
+    - source: salt://pillar/docker/docker.sls
+
+/srv/pillar/docker/images.sls:
+file.managed:
+  - source: salt://pillar/docker/images.sls
 {%- endif -%}
