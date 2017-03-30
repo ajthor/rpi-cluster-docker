@@ -1,7 +1,7 @@
-FROM armhf/ubuntu:xenial
+FROM rpi-cluster/alpine:3.5.2
 
 # Install dependencies.
-RUN apt-get update && apt-get install -qy \
+RUN apk add --update \
 		ca-certificates \
 		curl \
 		openssl

@@ -1,6 +1,12 @@
 # This file takes the image from docker-library and builds it specifically
 # using our base alpine image.
 
+{% set golang_version = 1.8 %}
+{% set golang_folder = "golang/1.8/alpine/" %}
+
+include:
+  - docker.alpine.build
+
 # Create the temp directory.
 /tmp/docker/alpine:
   file.directory:
@@ -13,7 +19,7 @@ https://github.com/docker-library/golang.git:
     - force_clone: True
 
 # Modify the Dockerfile.
-/tmp/docker/golang/1.8/alpine/Dockerfile:
+/tmp/docker/{{ golang_folder }}/Dockerfile:
   file.replace:
     - pattern: FROM[^\n]*?(?=\n)
     - repl: FROM rpi-cluster/alpine:latest
@@ -21,9 +27,16 @@ https://github.com/docker-library/golang.git:
       - git: https://github.com/docker-library/golang.git
 
 # Build the image.
-rpi-cluster/golang:1.8:
+rpi-cluster/golang:{{ golang_version }}:
   dockerng.image_present:
-    - build: /tmp/docker/golang/1.8/alpine
+    - build: /tmp/docker/{{ golang_folder }}
     - require:
       - git: https://github.com/docker-library/golang.git
-      - file: /tmp/docker/golang/1.8/alpine/Dockerfile
+      - file: /tmp/docker/{{ golang_folder }}/Dockerfile
+
+rpi-cluster/golang:latest:
+  dockerng.image_present:
+    - build: /tmp/docker/{{ golang_folder }}
+    - require:
+      - git: https://github.com/docker-library/golang.git
+      - file: /tmp/docker/{{ folder }}/Dockerfile

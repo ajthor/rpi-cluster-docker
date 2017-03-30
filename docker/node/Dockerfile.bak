@@ -1,0 +1,50 @@
+FROM rpi-cluster/alpine
+
+# Set up users and user groups and install build dependencies.
+RUN addgroup -g 1000 node \
+    && adduser -u 1000 -G node -s /bin/sh -D node \
+    && apk add --no-cache \
+      bash \
+      libstdc++ \
+    && apk add --update --no-cache --virtual .build-deps \
+      curl \
+      g++ \
+      gcc \
+      gnupg \
+      libgcc \
+      linux-headers \
+      make \
+      python
+
+# Configure bash shell.
+RUN touch ~/.bashrc \
+    && touch ~/.bash_profile \
+    && echo "source ~/.bashrc" >> ~/.bash_profile
+
+# Set environment variables which specify the install directory and the version
+# of node that we want to install.
+ENV NVM_DIR /usr/local/.nvm
+ENV NODE_VERSION {{ version }}
+
+# export NVM_DIR=/root/.nvm && export NODE_VERSION=7.3.0
+# echo "NVM_DIR=/root/.nvm" >> ~/.bashrc
+# echo "NODE_VERSION=7.3.0" >> ~/.bashrc
+
+# Get install script for nvm.
+RUN curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.33.1/install.sh | NVM_DIR=$NVM_DIR bash
+
+ENV NODE_PATH $NVM_DIR/versions/node/v$NODE_VERSION/lib/node_modules
+ENV PATH $NVM_DIR/versions/node/v$NODE_VERSION/bin:$PATH
+
+# echo "NODE_PATH=$NVM_DIR/versions/node/v$NODE_VERSION/lib/node_modules" >> ~/.bashrc
+# echo "PATH=$NVM_DIR/versions/node/v$NODE_VERSION/bin:$PATH" >> ~/.bashrc
+
+# Install node.
+RUN /bin/bash -c ". $NVM_DIR/nvm.sh \
+    && nvm install -s $NODE_VERSION \
+    && nvm use $NODE_VERSION"
+
+# Remove build dependencies.
+RUN apk del .build-deps
+
+CMD ["node"]
