@@ -42,6 +42,6 @@ docker-user:
     - source: salt://pillar/docker/docker.sls
 
 /srv/pillar/docker/images.sls:
-file.managed:
-  - source: salt://pillar/docker/images.sls
+  file.managed:
+    - source: salt://pillar/docker/images.sls
 {%- endif -%}
