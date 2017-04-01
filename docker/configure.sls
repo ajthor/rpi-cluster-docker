@@ -4,16 +4,14 @@
 {% set files = ['docker/docker', 'docker/images'] %}
 
 {% if grains['host'] == 'rpi-master' %}
-# Ensure pillar directory exists.
-/srv/pillar/docker:
-  file.directory:
-    - makedirs: True
 
 # Add pillar files.
 {% for f in files %}
 /srv/pillar/{{ f }}.sls:
   file.managed:
     - source: salt://pillar/{{ f }}.sls
+    - template: jinja
+    - makedirs: True
     - unless: test -f "/srv/pillar/{{ f }}.sls"
 {% endfor %}
 

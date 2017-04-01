@@ -1,6 +1,6 @@
 docker:
   images:
-    {%- if salt['pillar.get']('config:docker:use_external_images', false) -%}
+    {% if salt['pillar.get']('config:docker:use_external_images', false) %}
     - base_image:
       - tag: rpi-cluster/alpine
       - version: latest
@@ -13,7 +13,7 @@ docker:
     - golang:
       - tag: rpi-cluster/golang
       - version: latest
-    {%- else -%}
+    {% else %}
     - base_image:
       - tag: hypriot/rpi-alpine
       - version: latest
@@ -26,4 +26,4 @@ docker:
     - golang:
       - tag: hypriot/rpi-golang
       - version: latest
-    {%- endif -%}
+    {% endif %}
