@@ -1,5 +1,5 @@
 base:
   '*':
 {% for f in files %}
-    - docker.{{ f }}
+    - {{ f }}
 {% endfor %}
