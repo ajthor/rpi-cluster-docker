@@ -6,7 +6,6 @@ install-docker:
   salt.state:
     - sls: docker.install
     - tgt: '*'
-    - unless: which docker
 
 configure-docker:
   salt.state:

@@ -23,6 +23,10 @@
     - template: jinja
     - defaults:
       - files: {{ files }}
+    - require:
+{% for f in files %}
+      - file: /srv/pillar/docker/{{ f }}.sls
+{% endfor %}
 
 # Update the Salt pillar.
 update-salt-pillar:
@@ -30,9 +34,13 @@ update-salt-pillar:
     - name: saltutil.refresh_pillar
     - tgt: 'rpi-master'
     - onchanges:
-      - file: /srv/pillar/docker/docker.sls
-      - file: /srv/pillar/docker/images.sls
+{% for f in files %}
+      - file: /srv/pillar/docker/{{ f }}.sls
+{% endfor %}
     - require:
-      - file: /srv/pillar/docker/docker.sls
-      - file: /srv/pillar/docker/images.sls
+      - file: /srv/pillar/top.sls
+{% for f in files %}
+      - file: /srv/pillar/docker/{{ f }}.sls
+{% endfor %}
+
 {% endif %}
