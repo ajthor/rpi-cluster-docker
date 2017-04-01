@@ -22,7 +22,10 @@
     - source: salt://pillar/docker.tmpl
     - template: jinja
     - defaults:
-      files: {{ files }}
+        # NOTE: Need extra spaces here to make this work. Add an extra tab for
+        # defaults in file.append states using jinja templating.
+        # https://github.com/saltstack/salt/issues/18686
+        files: {{ files }}
     - require:
 {% for f in files %}
       - file: /srv/pillar/{{ f }}.sls
