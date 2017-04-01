@@ -13,7 +13,7 @@
     - template: jinja
     - makedirs: True
     - unless: test -f "/srv/pillar/{{ f }}.sls"
-{% endfor %}
+{%- endfor %}
 
 /srv/pillar/top.sls:
   file.append:
@@ -27,7 +27,7 @@
     - require:
 {% for f in files %}
       - file: /srv/pillar/{{ f }}.sls
-{% endfor %}
+{%- endfor %}
 
 # Update the Salt pillar.
 update-salt-pillar:
@@ -37,11 +37,11 @@ update-salt-pillar:
     - onchanges:
 {% for f in files %}
       - file: /srv/pillar/{{ f }}.sls
-{% endfor %}
+{%- endfor %}
     - require:
       - file: /srv/pillar/top.sls
 {% for f in files %}
       - file: /srv/pillar/{{ f }}.sls
-{% endfor %}
+{%- endfor %}
 
 {% endif %}

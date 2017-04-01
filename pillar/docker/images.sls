@@ -1,6 +1,9 @@
 docker:
   images:
-    {% if salt['pillar.get']('config:docker:use_external_images', false) %}
+    # Set the images to use, either locally built images or imaes pulled from
+    # Docker Hub.
+{% if salt['pillar.get']('docker:use_external_images', false) %}
+    # Locally-built images:
     - base_image:
       - tag: rpi-cluster/alpine
       - version: latest
@@ -13,7 +16,8 @@ docker:
     - golang:
       - tag: rpi-cluster/golang
       - version: latest
-    {% else %}
+{% else %}
+    # Images pulled from Docker Hub:
     - base_image:
       - tag: hypriot/rpi-alpine
       - version: latest
@@ -26,4 +30,4 @@ docker:
     - golang:
       - tag: hypriot/rpi-golang
       - version: latest
-    {% endif %}
+{% endif %}
