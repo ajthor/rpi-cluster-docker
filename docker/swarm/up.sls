@@ -8,7 +8,7 @@
 # ever need to SSH into the Master.
 swarm-start:
   salt.state:
-    - sls: swarm.manager.init
+    - sls: docker.swarm.manager.init
     - tgt: 'rpi-master'
     - unless:
       - docker node inspect self
@@ -29,7 +29,7 @@ update-salt-mine:
 
 add-manager-{{ server }}:
   salt.state:
-    - sls: swarm.manager.join
+    - sls: docker.swarm.manager.join
     - tgt: {{ server }}
 
 update-salt-mine-{{ server }}:
@@ -44,7 +44,7 @@ update-salt-mine-{{ server }}:
 
 add-worker-{{ server }}:
   salt.state:
-    - sls: swarm.worker.join
+    - sls: docker.swarm.worker.join
     - tgt: {{ server }}
 
 {% endif %}

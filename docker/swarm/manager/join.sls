@@ -4,7 +4,7 @@
 {% set join_ip = salt['mine.get']('*', 'manager_ip').items()[0][1][0] %}
 
 include:
-  - swarm.manager.mine
+  - docker.swarm.manager.mine
 
 swarm-join-manager:
   cmd.run:
