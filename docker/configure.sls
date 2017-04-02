@@ -1,46 +1,13 @@
-# This will configure the Docker pillar on the master and also install Docker
-# on every minion in the cluster.
+# This file will configure the Docker service and manage other configuration
+# settings on the targets. 
 
-{% set files = ['docker/docker', 'docker/images'] %}
-
-{% if grains['host'] == 'rpi-master' %}
-
-# Add pillar files.
-{% for f in files %}
-/srv/pillar/{{ f }}.sls:
-  file.managed:
-    - source: salt://pillar/{{ f }}.sls
-    - makedirs: True
-    - unless: test -f "/srv/pillar/{{ f }}.sls"
-{%- endfor %}
-
-/srv/pillar/top.sls:
-  file.append:
-    - source: salt://pillar/docker.tmpl
-    - template: jinja
-    - defaults:
-        # NOTE: Need extra spaces here to make this work. Add an extra tab for
-        # defaults in file.append states using jinja templating.
-        # https://github.com/saltstack/salt/issues/18686
-        files: {{ files }}
-    - require:
-{% for f in files %}
-      - file: /srv/pillar/{{ f }}.sls
-{%- endfor %}
-
-# Update the Salt pillar.
-update-salt-pillar:
-  salt.function:
-    - name: saltutil.refresh_pillar
-    - tgt: 'rpi-master'
-    - onchanges:
-{% for f in files %}
-      - file: /srv/pillar/{{ f }}.sls
-{%- endfor %}
-    - require:
-      - file: /srv/pillar/top.sls
-{% for f in files %}
-      - file: /srv/pillar/{{ f }}.sls
-{%- endfor %}
-
-{% endif %}
+# Ensure that the Docker service is running and enabled to start on boot and
+# configure the default user 'pi' to be a member of the 'docker' group.
+configure-docker-installation:
+  service.running:
+    - name: docker
+    - enable: True
+  group.present:
+    - name: docker
+    - addusers:
+      - pi
