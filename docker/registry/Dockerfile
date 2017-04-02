@@ -14,7 +14,7 @@
 # ENTRYPOINT ["/bin/registry"]
 # CMD ["/etc/docker/registry/config.yml"]
 
-FROM rpi-cluster/alpine:latest
+FROM {{ alpine_tag }}:{{ alpine_version }}
 
 RUN set -ex \
     && apk add --no-cache \
