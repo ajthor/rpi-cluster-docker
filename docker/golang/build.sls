@@ -17,7 +17,7 @@ include:
       - version: {{ version }}
 
 # Build the image.
-rpi-cluster/golang:{{ golang_version }}:
+rpi-cluster/golang:{{ version }}:
   dockerng.image_present:
     - build: {{ tmpdir }}
     - require:
