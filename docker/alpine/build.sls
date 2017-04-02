@@ -1,32 +1,31 @@
 # This file builds a local alpine linux box from scratch.
 
-# Create the temp directory.
-/tmp/docker/alpine:
-  file.directory:
+{%- set version = salt['pillar.get']('docker:images:base_image:version', '3.5.2') -%}
+{%- set tmpdir = '/tmp/docker/rpi-cluster/alpine' %}
+
+# Add the Dockerfile from repo.
+{{ tmpdir }}/Dockerfile:
+  file.managed:
+    - source: salt://docker/alpine/Dockerfile
     - makedirs: True
 
 # Get the rootfs from the alpine distro.
 rootfs:
   cmd.run:
-    - name: curl -o rootfs.tar.gz -sL  https://nl.alpinelinux.org/alpine/v3.5/releases/armhf/alpine-minirootfs-3.5.2-armhf.tar.gz
-    - cwd: /tmp/docker/alpine
-
-# Add the Dockerfile from repo.
-/tmp/docker/alpine/Dockerfile:
-  file.managed:
-    - source: salt://docker/alpine/Dockerfile
+    - name: curl -o rootfs.tar.gz -sL  https://nl.alpinelinux.org/alpine/v3.5/releases/armhf/alpine-minirootfs-{{ version }}-armhf.tar.gz
+    - cwd: {{ tmpdir }}
 
 # Build the image.
-rpi-cluster/alpine:3.5.2:
+rpi-cluster/alpine:{{ version }}:
   dockerng.image_present:
-    - build: /tmp/docker/alpine
+    - build: {{ tmpdir }}
     - require:
       - cmd: rootfs
-      - file: /tmp/docker/alpine/Dockerfile
+      - file: {{ tmpdir }}/Dockerfile
 
 rpi-cluster/alpine:latest:
   dockerng.image_present:
-    - build: /tmp/docker/alpine
+    - build: {{ tmpdir }}
     - require:
       - cmd: rootfs
-      - file: /tmp/docker/alpine/Dockerfile
+      - file: {{ tmpdir }}/Dockerfile

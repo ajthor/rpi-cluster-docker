@@ -1,42 +1,30 @@
 # This file takes the image from docker-library and builds it specifically
 # using our base alpine image.
 
-{% set golang_version = 1.8 %}
-{% set golang_folder = "golang/1.8/alpine/" %}
+{%- set version = salt['pillar.get']('docker:images:golang:version', '1.8') -%}
+{%- set tmpdir = '/tmp/docker/rpi-cluster/golang' %}
 
 include:
   - docker.alpine.build
 
-# Create the temp directory.
-/tmp/docker/alpine:
-  file.directory:
+# Add the Dockerfile from repo.
+{{ tmpdir }}/Dockerfile:
+  file.managed:
+    - source: salt://docker/alpine/Dockerfile
     - makedirs: True
-
-# Download the Github repo.
-https://github.com/docker-library/golang.git:
-  git.latest:
-    - target: /tmp/docker/golang
-    - force_clone: True
-
-# Modify the Dockerfile.
-/tmp/docker/{{ golang_folder }}/Dockerfile:
-  file.replace:
-    - pattern: FROM[^\n]*?(?=\n)
-    - repl: FROM rpi-cluster/alpine:latest
-    - require:
-      - git: https://github.com/docker-library/golang.git
+    - template: jinja
+    - defaults:
+      - version: {{ version }}
 
 # Build the image.
 rpi-cluster/golang:{{ golang_version }}:
   dockerng.image_present:
-    - build: /tmp/docker/{{ golang_folder }}
+    - build: {{ tmpdir }}
     - require:
-      - git: https://github.com/docker-library/golang.git
-      - file: /tmp/docker/{{ golang_folder }}/Dockerfile
+      - file: {{ tmpdir }}/Dockerfile
 
 rpi-cluster/golang:latest:
   dockerng.image_present:
-    - build: /tmp/docker/{{ golang_folder }}
+    - build: {{ tmpdir }}
     - require:
-      - git: https://github.com/docker-library/golang.git
-      - file: /tmp/docker/{{ folder }}/Dockerfile
+      - file: {{ tmpdir }}/Dockerfile
