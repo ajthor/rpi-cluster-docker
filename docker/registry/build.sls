@@ -62,12 +62,15 @@ distribution:
       - file: replace-config-file
 
 # Create an image to pull the registry file from.
-create-registry:
-  cmd.run:
-    - cmd: >
-      docker create --name builder distribution
-      && docker cp builder:/go/bin/registry {{ tmpdir }}/registry
-      && docker cp builder:/go/src/github.com/docker/distribution/cmd/registry/config-example.yml {{ tmpdir }}/registry
+docker create --name builder distribution:
+  cmd.run
+
+# Pull the registry files.
+docker cp builder:/go/bin/registry {{ tmpdir }}/registry:
+  cmd.run
+
+docker cp builder:/go/src/github.com/docker/distribution/cmd/registry/config-example.yml {{ tmpdir }}/registry:
+  cmd.run
 
 # Remove the distribution container.
 build:
