@@ -7,7 +7,7 @@
 # Add the Dockerfile from repo.
 {{ tmpdir }}/Dockerfile:
   file.managed:
-    - source: salt://docker/alpine/Dockerfile
+    - source: salt://docker/golang/Dockerfile
     - makedirs: True
     - template: jinja
     - defaults:
