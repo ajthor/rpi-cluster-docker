@@ -40,7 +40,7 @@ replace-config-file:
 # Build the distribution image.
 build-distribution-image:
   dockerng.image_present:
-    - name: rpi-cluster/distribution:{{ version }}
+    - name: rpi-cluster/registry:latest
     - build: {{ tmpdir }}/registry
     - require:
       - git: https://github.com/docker/distribution-library-image

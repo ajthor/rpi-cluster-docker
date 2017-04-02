@@ -30,4 +30,4 @@ docker:
     - registry:
       - tag: rpi-cluster/registry
       - ext_tag: vdavy/registry-arm
-      - version: latest
+      - version: 2.6.1
