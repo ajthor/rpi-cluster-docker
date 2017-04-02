@@ -10,7 +10,6 @@
 /srv/pillar/{{ f }}.sls:
   file.managed:
     - source: salt://pillar/{{ f }}.sls
-    - template: jinja
     - makedirs: True
     - unless: test -f "/srv/pillar/{{ f }}.sls"
 {%- endfor %}
