@@ -13,15 +13,22 @@
     - defaults:
       version: {{ version }}
 
+{{ tmpdir }}/go-wrapper:
+  file.managed:
+    - source: salt://docker/golang/go-wrapper
+    - makedirs: True
+
 # Build the image.
 rpi-cluster/golang:{{ version }}:
   dockerng.image_present:
     - build: {{ tmpdir }}
     - require:
       - file: {{ tmpdir }}/Dockerfile
+      - file: {{ tmpdir }}/go-wrapper
 
 rpi-cluster/golang:latest:
   dockerng.image_present:
     - build: {{ tmpdir }}
     - require:
       - file: {{ tmpdir }}/Dockerfile
+      - file: {{ tmpdir }}/go-wrapper
