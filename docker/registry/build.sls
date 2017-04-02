@@ -42,7 +42,7 @@ replace-base-image:
     - pattern: FROM[^\n]*?(?=\n)
     - repl: FROM {{ golang_tag }}:{{ golang_version }}
     - require:
-      - git: https://github.com/docker/distribution-library-image
+      - git: https://github.com/docker/distribution
 
 replace-config-file:
   file.replace:
@@ -50,14 +50,14 @@ replace-config-file:
     - pattern: COPY cmd/registry/config-dev.yml
     - repl: COPY cmd/registry/config-example.yml
     - require:
-      - git: https://github.com/docker/distribution-library-image
+      - git: https://github.com/docker/distribution
 
 # Build the temporary distribution image.
 distribution:
   dockerng.image_present:
     - build: {{ tmpdir_builder }}
     - require:
-      - git: https://github.com/docker/distribution-library-image
+      - git: https://github.com/docker/distribution
       - file: replace-base-image
       - file: replace-config-file
 
