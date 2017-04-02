@@ -31,7 +31,7 @@ build-golang:
       - dockerng: {{ golang_tag }}:{{ golang_version }}
 
 # Clone the Git repo that contains the scripts and files for the registry image.
-https://github.com/docker/distribution-library-image:
+https://github.com/docker/distribution:
   git.latest:
     - target: {{ tmpdir_builder }}
 
@@ -101,6 +101,5 @@ build:
   dockerng.image_present:
     - build: {{ tmpdir }}
     - require:
-      - cmd: create-registry
       - file: {{ tmpdir }}/Dockerfile
       - file: {{ tmpdir }}/docker-entrypoint.sh
