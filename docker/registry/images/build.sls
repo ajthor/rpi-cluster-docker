@@ -20,12 +20,12 @@ build-golang:
 # Clone the Git repo that contains the scripts and files for the registry image.
 https://github.com/docker/distribution-library-image:
   git.latest:
-    - target: {{ tmpdir }}/registry
+    - target: {{ tmpdir }}
 
 # Change Dockerfile to use our golang base image.
 replace-base-image:
   file.replace:
-    - name: {{ tmpdir }}/registry/Dockerfile
+    - name: {{ tmpdir }}/Dockerfile
     - pattern: FROM[^\n]*?(?=\n)
     - repl: FROM {{ golang_tag }}:{{ golang_version }}
     - require:
@@ -33,7 +33,7 @@ replace-base-image:
 
 replace-config-file:
   file.replace:
-    - name: {{ tmpdir }}/registry/Dockerfile
+    - name: {{ tmpdir }}/Dockerfile
     - pattern: COPY cmd/registry/config-dev.yml
     - repl: COPY cmd/registry/config-example.yml
     - require:
@@ -42,7 +42,7 @@ replace-config-file:
 # Build the distribution image.
 rpi-cluster/registry:latest:
   dockerng.image_present:
-    - build: {{ tmpdir }}/registry
+    - build: {{ tmpdir }}
     - require:
       - git: https://github.com/docker/distribution-library-image
       - file: replace-base-image
