@@ -14,10 +14,13 @@
 # ENTRYPOINT ["/bin/registry"]
 # CMD ["/etc/docker/registry/config.yml"]
 
-FROM armhf/alpine:3.4
+FROM rpi-cluster/alpine:latest
 
 RUN set -ex \
-    && apk add --no-cache ca-certificates librados2 apache2-utils
+    && apk add --no-cache \
+    ca-certificates \
+    librados2 \
+    apache2-utils
 
 COPY ./registry/registry /bin/registry
 COPY ./registry/config-example.yml /etc/docker/registry/config.yml

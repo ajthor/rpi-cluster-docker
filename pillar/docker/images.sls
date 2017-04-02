@@ -26,3 +26,8 @@ docker:
       - tag: rpi-cluster/golang
       - ext_tag: resin/raspberrypi3-alpine-golang
       - version: 1.8
+
+    - registry:
+      - tag: rpi-cluster/registry
+      - ext_tag: vdavy/registry-arm
+      - version: latest

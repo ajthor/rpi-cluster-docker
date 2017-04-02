@@ -19,8 +19,7 @@ echo "Fetching and building distribution $VERSION..."
 TEMP=`mktemp -d /$TMPDIR/distribution.XXXXXX`
 
 git clone -b $VERSION https://github.com/docker/distribution.git $TEMP
-sed -i.bak -e "s/FROM golang/FROM armhf\/golang/g"  $TEMP/Dockerfile
-cat  $TEMP/Dockerfile
+sed -i.bak -e "s/FROM golang:1.7-alpine/FROM rpi-cluster\/golang:latest/g"  $TEMP/Dockerfile
 docker build -t distribution-builder $TEMP
 
 # Create a dummy distribution-build container so we can run a cp against it.

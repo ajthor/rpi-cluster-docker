@@ -1,62 +1,55 @@
-# This file builds a local Registry image for ARM.
+# This file builds a local Registry image for ARM. It uses the official
+# registry distribution repo as a base and makes some small replacements in the
+# dockerfile to use the golang image specified in the pillar.
 
-armhf/alpine:
+{%- set golang_tag = salt['pillar.get']('docker:images:golabg:tag', 'rpi-cluster/golang') -%}
+{%- set golang_version = salt['pillar.get']('docker:images:golang:version', '1.8') -%}
+{%- set tmpdir = '/tmp/docker/rpi-cluster/registry' %}
+
+# Make sure the golang image is present.
+{{ golang_tag }}:{{ golang_version }}:
   dockerng.image_present
 
-/tmp/docker/registry:
-  file.directory:
-    - makedirs: True
-
-/tmp/docker/update.sh:
-  file.managed:
-    - source: salt://docker/registry/images/update.sh
-    - mode: 755
-
-/tmp/docker/docker-entrypoint.sh:
-  file.managed:
-    - source: salt://docker/registry/images/docker-entrypoint.sh
-    - mode: 755
-
-/tmp/docker/Dockerfile:
-  file.managed:
-    - source: salt://docker/registry/images/Dockerfile
-
-/tmp/docker/registry/config-example.yml:
-  file.managed:
-    - source: salt://docker/registry/images/config-example.yml
-
-/tmp/docker/update.sh v2.6:
-  cmd.run:
-    - require:
-      - file: /tmp/docker/registry
-      - file: /tmp/docker/update.sh
+build-golang:
+  salt.state:
+    - sls: docker.golang.build
+    - tgt: {{ salt['pillar.get']('config:master_hostname', 'rpi-master') }}
+    - onfail:
+      - dockerng: {{ golang_tag }}:{{ golang_version }}
 
 # Clone the Git repo that contains the scripts and files for the registry image.
-# https://github.com/docker/distribution-library-image:
-#   git.latest:
-#     - target: /home/pi/docker/registry
-#     - bare: True
+https://github.com/docker/distribution-library-image:
+  git.latest:
+    - target: {{ tmpdir }}/registry
 
-# RUn update script for registry file. This will make the registry binary
-# native to ARM.
-# run-update-script:
-#   cmd.run:
-#     - name: /home/pi/docker/registry/update.sh v2.4.0
-#     - require:
-#       - git: https://github.com/docker/distribution-library-image.git
+# Change Dockerfile to use our golang base image.
+replace-base-image:
+  file.replace:
+    - pattern: FROM[^\n]*?(?=\n)
+    - repl: FROM {{ golang_tag }}:{{ golang_version }}
+    - require:
+      - git: https://github.com/docker/distribution-library-image
 
-# Replace the Dockerfile source with an updated FROM line.
-# /home/pi/docker/registry/Dockerfile:
-#   file.replace:
-#     - pattern: FROM alpine
-#     - repl: FROM armhf/alpine
-#     - reguire:
-#       - git: https://github.com/docker/distribution-library-image
+replace-config-file:
+  file.replace:
+    - pattern: COPY cmd/registry/config-dev.yml
+    - repl: COPY cmd/registry/config-example.yml
+    - require:
+      - git: https://github.com/docker/distribution-library-image
+
+# Build the distribution image.
+build-distribution-image:
+  dockerng.image_present:
+    - name: rpi-cluster/distribution:{{ version }}
+    - build: {{ tmpdir }}/registry
+    - require:
+      - git: https://github.com/docker/distribution-library-image
+      - file: {{ tmpdir }}/registry/Dockerfile
 
 # Build the image.
-# armhf_registry:
-#   dockerng.image_present:
-#     - build: /home/pi/docker/registry
-#     - require:
-#       - git: https://github.com/docker/distribution-library-image
-#       - file: /home/pi/docker/registry/Dockerfile
+rpi-cluster/registry:latest:
+  dockerng.image_present:
+    - build: /home/pi/docker/registry
+    - require:
+      - git: https://github.com/docker/distribution-library-image
+      - file: /home/pi/docker/registry/Dockerfile
