@@ -4,9 +4,6 @@
 {%- set version = salt['pillar.get']('docker:images:golang:version', '1.8') -%}
 {%- set tmpdir = '/tmp/docker/rpi-cluster/golang' %}
 
-include:
-  - docker.alpine.build
-
 # Add the Dockerfile from repo.
 {{ tmpdir }}/Dockerfile:
   file.managed:

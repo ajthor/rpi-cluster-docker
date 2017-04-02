@@ -4,9 +4,6 @@
 {%- set version = salt['pillar.get']('docker:images:node:version', '7.8.0') -%}
 {%- set tmpdir = '/tmp/docker/rpi-cluster/node' %}
 
-include:
-  - docker.alpine.build
-
 # Add the Dockerfile from repo.
 {{ tmpdir }}/Dockerfile:
   file.managed:
