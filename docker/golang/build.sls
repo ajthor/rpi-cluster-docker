@@ -14,7 +14,7 @@ include:
     - makedirs: True
     - template: jinja
     - defaults:
-      - version: {{ version }}
+      version: {{ version }}
 
 # Build the image.
 rpi-cluster/golang:{{ version }}:
