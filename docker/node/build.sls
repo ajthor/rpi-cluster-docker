@@ -7,14 +7,14 @@
 include:
   - docker.alpine.build
 
-# Modify the Dockerfile.
+# Add the Dockerfile from repo.
 {{ tmpdir }}/Dockerfile:
   file.managed:
     - source: salt://docker/node/Dockerfile
     - makedirs: True
     - template: jinja
     - defaults:
-      - version: {{ node_version }}
+      - version: {{ version }}
 
 # Build the image.
 rpi-cluster/node:{{ node_version }}:
