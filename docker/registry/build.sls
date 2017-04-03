@@ -17,7 +17,7 @@
 # Here, we build the registry distribution builder so that we can pull the
 # registry file from it to create our own, ARM-native registry. This is roughly
 # a salt version of the update script found in the registry image repo.
-# https://github.com/docker/distribution-library-image/tree/master
+# https://github.com/docker/distribution-library-image
 
 # Make sure the golang image is present.
 {{ golang_tag }}:{{ golang_version }}:
@@ -68,18 +68,18 @@ docker create --name builder distribution:
 # Pull the registry files.
 docker cp builder:/go/bin/registry registry:
   cmd.run:
-    - cwd: {{ tmpdir }}
+    - cwd: {{ tmpdir }}/registry
 
-docker cp builder:/go/src/github.com/docker/distribution/cmd/registry/config-example.yml {{ tmpdir }}/registry:
+docker cp builder:/go/src/github.com/docker/distribution/cmd/registry/config-example.yml registry:
   cmd.run:
-    - cwd: {{ tmpdir }}
+    - cwd: {{ tmpdir }}/registry
 
 # Remove the distribution container.
 builder:
   dockerng.absent:
     - force: True
 
-# Now that we have the registry file from the builder, we can go through the
+# Now that we have the registry binary from the builder, we can go through the
 # process of creating our own registry image. We need to copy the entrypoint
 # file and the Dockerfile over to the temporary directory and build our new
 # image.

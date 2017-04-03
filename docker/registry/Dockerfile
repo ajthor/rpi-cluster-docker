@@ -19,7 +19,6 @@ FROM {{ alpine_tag }}:{{ alpine_version }}
 RUN set -ex \
     && apk add --no-cache \
     ca-certificates \
-    librados2 \
     apache2-utils
 
 COPY ./registry/registry /bin/registry
