@@ -66,7 +66,7 @@ docker create --name builder distribution:
   cmd.run
 
 # Make sure the temp directory exists.
-{{ tmpdir }}/registry
+{{ tmpdir }}/registry:
   file.directory:
     - makedirs: True
 
