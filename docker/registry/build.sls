@@ -65,6 +65,11 @@ distribution:
 docker create --name builder distribution:
   cmd.run
 
+# Make sure the temp directory exists.
+{{ tmpdir }}/registry
+  file.directory:
+    - makedirs: True
+
 # Pull the registry files.
 docker cp builder:/go/bin/registry registry:
   cmd.run:
