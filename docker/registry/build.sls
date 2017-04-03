@@ -2,6 +2,11 @@
 # registry distribution repo as a base and makes some small replacements in the
 # dockerfile to use the golang image specified in the pillar.
 
+# For more reference, see:
+# https://github.com/docker/distribution
+# https://github.com/docker/distribution-library-image
+
+
 {%- set alpine_tag = salt['pillar.get']('docker:images:alpine:tag', 'rpi-cluster/alpine') -%}
 {%- set alpine_version = salt['pillar.get']('docker:images:alpine:version', '3.5.2') -%}
 
@@ -9,7 +14,7 @@
 {%- set golang_version = salt['pillar.get']('docker:images:golang:version', '1.8') -%}
 
 {%- set registry_tag = salt['pillar.get']('docker:images:registry:tag', 'rpi-cluster/registry') -%}
-{%- set registry_version = salt['pillar.get']('docker:images:registry:version', '2.5') -%}
+{%- set registry_version = salt['pillar.get']('docker:images:registry:version', '2.6.1') -%}
 
 {%- set tmpdir = '/tmp/docker/rpi-cluster/registry' %}
 {%- set tmpdir_builder = '/tmp/docker/rpi-cluster/registry_builder' %}
@@ -103,6 +108,7 @@ builder:
   file.managed:
     - source: salt://docker/registry/docker-entrypoint.sh
     - makedirs: True
+    - mode: 755
 
 {{ registry_tag }}:{{ registry_version}}:
   dockerng.image_present:
