@@ -75,7 +75,7 @@ docker cp builder:/go/bin/registry registry:
   cmd.run:
     - cwd: {{ tmpdir }}/registry
 
-docker cp builder:/go/src/github.com/docker/distribution/cmd/registry/config-example.yml registry:
+docker cp builder:/go/src/github.com/docker/distribution/cmd/registry/config-example.yml config-example.yml:
   cmd.run:
     - cwd: {{ tmpdir }}/registry
 
