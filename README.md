@@ -15,3 +15,12 @@ This repo contains Salt scripts for configuring Docker and for starting swarm mo
 # Contribute
 
 If you would like to contribute to this project, please fork and pull request. I'm happy to support any contributions to this project.
+
+---
+
+# Future
+
+Some things that I would like to see in the future.
+
+- Build local Docker images from scratch, to ensure they work on the local ARM architecture.
+- Create a native repository image, instead of using 'vdavy/registry-arm' or the ones from scaleway/hypriot.
