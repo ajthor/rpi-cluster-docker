@@ -1,6 +1,6 @@
-FROM rpi-cluster/alpine
+FROM {{ base_image }}
 
-ENV GO_VERSION 1.8
+ENV GO_VERSION {{ version }}
 
 # Install dependencies
 RUN apk add --no-cache \
@@ -8,7 +8,7 @@ RUN apk add --no-cache \
 
 RUN mkdir -p /usr/local/go \
 	&& curl -SLO "http://resin-packages.s3.amazonaws.com/golang/v$GO_VERSION/go$GO_VERSION.linux-alpine-armhf.tar.gz" \
-	&& echo "d9759ca7bef54e6ca4da6fc690481c51604ded60ad2265facf1986121bcc1fa0  go1.8.linux-alpine-armhf.tar.gz" | sha256sum -c - \
+	&& echo "{{ sha1 }}  go$GO_VERSION.linux-alpine-armhf.tar.gz" | sha256sum -c - \
 	&& tar -xzf "go$GO_VERSION.linux-alpine-armhf.tar.gz" -C /usr/local/go --strip-components=1 \
 	&& rm -f go$GO_VERSION.linux-alpine-armhf.tar.gz
 

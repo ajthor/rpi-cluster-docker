@@ -1,7 +1,10 @@
 # This file builds a local alpine linux box from scratch.
 
-{%- set version = salt['pillar.get']('docker:images:base_image:version', '3.5.2') -%}
-{%- set tmpdir = '/tmp/docker/rpi-cluster/alpine' %}
+{% set version = salt['pillar.get']('docker:images:base_image:version') %}
+
+{% if not salt['pillar.get']('docker:use_external_images', false) %}
+{% set tag = salt['pillar.get']('docker:images:base_image:tag') %}
+{% set tmpdir = '/tmp/docker/rpi-cluster/alpine' %}
 
 # Add the Dockerfile from repo.
 {{ tmpdir }}/Dockerfile:
@@ -12,20 +15,28 @@
 # Get the rootfs from the alpine distro.
 rootfs:
   cmd.run:
-    - name: curl -o rootfs.tar.gz -sL  https://nl.alpinelinux.org/alpine/v3.5/releases/armhf/alpine-minirootfs-{{ version }}-armhf.tar.gz
+    - name: curl -o rootfs.tar.gz -sL {{ rootfs_url }}
     - cwd: {{ tmpdir }}
 
 # Build the image.
-rpi-cluster/alpine:{{ version }}:
+{{ tag }}:{{ version }}:
   dockerng.image_present:
     - build: {{ tmpdir }}
-    - require:
+    - onchanges:
       - cmd: rootfs
       - file: {{ tmpdir }}/Dockerfile
 
-rpi-cluster/alpine:latest:
+{{ tag }}:latest:
   dockerng.image_present:
     - build: {{ tmpdir }}
-    - require:
+    - onchanges:
       - cmd: rootfs
       - file: {{ tmpdir }}/Dockerfile
+
+{% else %}
+{% set tag = salt['pillar.get']('docker:images:base_image:ext_tag') %}
+
+{{ tag }}:{{ version }}:
+  dockerng.image_present
+
+{% endif %}

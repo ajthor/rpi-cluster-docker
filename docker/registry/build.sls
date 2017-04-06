@@ -6,88 +6,20 @@
 # https://github.com/docker/distribution
 # https://github.com/docker/distribution-library-image
 
+{% set version = salt['pillar.get']('docker:images:registry:version', '2.6.1') %}
 
-{%- set alpine_tag = salt['pillar.get']('docker:images:alpine:tag', 'rpi-cluster/alpine') -%}
-{%- set alpine_version = salt['pillar.get']('docker:images:alpine:version', '3.5.2') -%}
-
-{%- set golang_tag = salt['pillar.get']('docker:images:golang:tag', 'rpi-cluster/golang') -%}
-{%- set golang_version = salt['pillar.get']('docker:images:golang:version', '1.8') -%}
-
-{%- set registry_tag = salt['pillar.get']('docker:images:registry:tag', 'rpi-cluster/registry') -%}
-{%- set registry_version = salt['pillar.get']('docker:images:registry:version', '2.6.1') -%}
+{% if not salt['pillar.get']('docker:use_external_images', false) %}
+{% set tag = salt['pillar.get']('docker:images:registry:tag') %}
+{% set base_image = salt['pillar.get']('docker:images:base_image:tag') %}
 
 {%- set tmpdir = '/tmp/docker/rpi-cluster/registry' %}
-{%- set tmpdir_builder = '/tmp/docker/rpi-cluster/registry_builder' %}
 
-# Here, we build the registry distribution builder so that we can pull the
-# registry file from it to create our own, ARM-native registry. This is roughly
-# a salt version of the update script found in the registry image repo.
-# https://github.com/docker/distribution-library-image
-
-# Make sure the golang image is present.
-{{ golang_tag }}:{{ golang_version }}:
-  dockerng.image_present
-
-build-golang:
+# First, we need to create the registry binary, which we will use in our new
+# registry image.
+create-registry-binary:
   salt.state:
-    - sls: docker.golang.build
+    - sls: docker.registry.distribution
     - tgt: {{ salt['pillar.get']('config:master_hostname', 'rpi-master') }}
-    - onfail:
-      - dockerng: {{ golang_tag }}:{{ golang_version }}
-
-# Clone the Git repo that contains the scripts and files for the registry image.
-https://github.com/docker/distribution:
-  git.latest:
-    - target: {{ tmpdir_builder }}
-
-# Change Dockerfile to use our golang base image.
-replace-base-image:
-  file.replace:
-    - name: {{ tmpdir_builder }}/Dockerfile
-    - pattern: FROM[^\n]*?(?=\n)
-    - repl: FROM {{ golang_tag }}:{{ golang_version }}
-    - require:
-      - git: https://github.com/docker/distribution
-
-replace-config-file:
-  file.replace:
-    - name: {{ tmpdir_builder }}/Dockerfile
-    - pattern: COPY cmd/registry/config-dev.yml
-    - repl: COPY cmd/registry/config-example.yml
-    - require:
-      - git: https://github.com/docker/distribution
-
-# Build the temporary distribution image.
-distribution:
-  dockerng.image_present:
-    - build: {{ tmpdir_builder }}
-    - require:
-      - git: https://github.com/docker/distribution
-      - file: replace-base-image
-      - file: replace-config-file
-
-# Create an image to pull the registry file from.
-docker create --name builder distribution:
-  cmd.run
-
-# Make sure the temp directory exists.
-{{ tmpdir }}/registry:
-  file.directory:
-    - makedirs: True
-
-# Pull the registry files.
-docker cp builder:/go/bin/registry registry:
-  cmd.run:
-    - cwd: {{ tmpdir }}/registry
-
-docker cp builder:/go/src/github.com/docker/distribution/cmd/registry/config-example.yml config-example.yml:
-  cmd.run:
-    - cwd: {{ tmpdir }}/registry
-
-# Remove the distribution container.
-builder:
-  dockerng.absent:
-    - force: True
 
 # Now that we have the registry binary from the builder, we can go through the
 # process of creating our own registry image. We need to copy the entrypoint
@@ -101,8 +33,7 @@ builder:
     - makedirs: True
     - template: jinja
     - defaults:
-      alpine_tag: {{ alpine_tag }}
-      alpine_version: {{ alpine_version }}
+      base_image: {{ base_image }}
 
 {{ tmpdir }}/docker-entrypoint.sh:
   file.managed:
@@ -110,9 +41,26 @@ builder:
     - makedirs: True
     - mode: 755
 
-{{ registry_tag }}:{{ registry_version}}:
+{{ tag }}:{{ version }}:
   dockerng.image_present:
     - build: {{ tmpdir }}
-    - require:
+    - onchanges:
+      - salt: create-registry-binary
       - file: {{ tmpdir }}/Dockerfile
       - file: {{ tmpdir }}/docker-entrypoint.sh
+
+  {{ tag }}:latest:
+    dockerng.image_present:
+      - build: {{ tmpdir }}
+      - onchanges:
+        - salt: create-registry-binary
+        - file: {{ tmpdir }}/Dockerfile
+        - file: {{ tmpdir }}/docker-entrypoint.sh
+
+{% else %}
+{% set tag = salt['pillar.get']('docker:images:registry:ext_tag') %}
+
+{{ tag }}:{{ version }}:
+  dockerng.image_present
+
+{% endif %}

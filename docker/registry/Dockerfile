@@ -14,7 +14,7 @@
 # ENTRYPOINT ["/bin/registry"]
 # CMD ["/etc/docker/registry/config.yml"]
 
-FROM {{ alpine_tag }}:{{ alpine_version }}
+FROM {{ base_image }}
 
 RUN set -ex \
     && apk add --no-cache \
