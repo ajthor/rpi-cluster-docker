@@ -4,6 +4,7 @@
 
 {% if not salt['pillar.get']('docker:use_external_images', false) %}
 {% set tag = salt['pillar.get']('docker:images:base_image:tag') %}
+{% set rootfs_url = salt['pillar.get']('docker:images:base_image:rootfs_url') %}
 {% set tmpdir = '/tmp/docker/rpi-cluster/alpine' %}
 
 # Add the Dockerfile from repo.

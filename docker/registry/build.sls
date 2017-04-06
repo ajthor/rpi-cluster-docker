@@ -49,13 +49,13 @@ create-registry-binary:
       - file: {{ tmpdir }}/Dockerfile
       - file: {{ tmpdir }}/docker-entrypoint.sh
 
-  {{ tag }}:latest:
-    dockerng.image_present:
-      - build: {{ tmpdir }}
-      - onchanges:
-        - salt: create-registry-binary
-        - file: {{ tmpdir }}/Dockerfile
-        - file: {{ tmpdir }}/docker-entrypoint.sh
+{{ tag }}:latest:
+  dockerng.image_present:
+    - build: {{ tmpdir }}
+    - onchanges:
+      - salt: create-registry-binary
+      - file: {{ tmpdir }}/Dockerfile
+      - file: {{ tmpdir }}/docker-entrypoint.sh
 
 {% else %}
 {% set tag = salt['pillar.get']('docker:images:registry:ext_tag') %}
