@@ -15,11 +15,11 @@ RUN apk add --no-cache \
 
 # Install Python.
 RUN curl -SLO "http://resin-packages.s3.amazonaws.com/python/v$PYTHON_VERSION/Python-$PYTHON_VERSION.linux-alpine-armhf.tar.gz" \
-	&& echo "  Python-3.6.0.linux-alpine-armhf.tar.gz" | sha256sum -c - \
+	&& echo "{{ sha256 }}  Python-3.6.0.linux-alpine-armhf.tar.gz" | sha256sum -c - \
 	&& tar -xzf "Python-$PYTHON_VERSION.linux-alpine-armhf.tar.gz" --strip-components=1 \
 	&& rm "Python-$PYTHON_VERSION.linux-alpine-armhf.tar.gz" \
   && pip install -U pip setuptools \
-  # Set useful symlinks. 
+  # Set useful symlinks.
   && cd /usr/local/bin \
 	&& ln -sf pip3 pip \
 	&& ln -sf easy_install-3.6 easy_install \
