@@ -1,7 +1,6 @@
-FROM rpi-cluster/alpine
+FROM {{ base_image }}
 
-ENV PYTHON_VERSION=3.6.0 \
-    PYTHON_PIP_VERSION=9.0.1
+ENV PYTHON_VERSION {{ version }}
 
 RUN apk add --no-cache \
     ca-certificates \
@@ -16,10 +15,11 @@ RUN apk add --no-cache \
 
 # Install Python.
 RUN curl -SLO "http://resin-packages.s3.amazonaws.com/python/v$PYTHON_VERSION/Python-$PYTHON_VERSION.linux-alpine-armhf.tar.gz" \
-	&& echo "01e9faafa87d5f5ca49d50971a4a1eead18982f9e2cd01880a3651a1bdbfc9f1  Python-3.6.0.linux-alpine-armhf.tar.gz" | sha256sum -c - \
+	&& echo "  Python-3.6.0.linux-alpine-armhf.tar.gz" | sha256sum -c - \
 	&& tar -xzf "Python-$PYTHON_VERSION.linux-alpine-armhf.tar.gz" --strip-components=1 \
 	&& rm "Python-$PYTHON_VERSION.linux-alpine-armhf.tar.gz" \
   && pip install -U pip setuptools \
+  # Set useful symlinks. 
   && cd /usr/local/bin \
 	&& ln -sf pip3 pip \
 	&& ln -sf easy_install-3.6 easy_install \

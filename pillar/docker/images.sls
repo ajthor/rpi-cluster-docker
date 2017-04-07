@@ -17,13 +17,12 @@ docker:
 
     - python:
       - tag: rpi-cluster/python
-      - ext_tag: resin/raspberrypi3-alpine-python
-      - version: 2.7
-
-    - python3:
-      - tag: rpi-cluster/python
+      # You need to change this external image to use
+      # `resin/raspberrypi3-alpine-python` if you are using python version 2.7
+      # or lower.
       - ext_tag: resin/raspberrypi3-alpine-python3
-      - version: 3
+      - version: 3.6.0
+      - sha256: 01e9faafa87d5f5ca49d50971a4a1eead18982f9e2cd01880a3651a1bdbfc9f1
 
     - golang:
       - tag: rpi-cluster/golang
