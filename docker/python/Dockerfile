@@ -18,7 +18,6 @@ RUN curl -SLO "http://resin-packages.s3.amazonaws.com/python/v$PYTHON_VERSION/Py
 	&& echo "{{ sha256 }}  Python-3.6.0.linux-alpine-armhf.tar.gz" | sha256sum -c - \
 	&& tar -xzf "Python-$PYTHON_VERSION.linux-alpine-armhf.tar.gz" --strip-components=1 \
 	&& rm "Python-$PYTHON_VERSION.linux-alpine-armhf.tar.gz" \
-  && pip install -U pip setuptools \
   # Set useful symlinks.
   && cd /usr/local/bin \
 	&& ln -sf pip3 pip \
@@ -26,6 +25,8 @@ RUN curl -SLO "http://resin-packages.s3.amazonaws.com/python/v$PYTHON_VERSION/Py
 	&& ln -sf idle3 idle \
 	&& ln -sf pydoc3 pydoc \
 	&& ln -sf python3 python \
-	&& ln -sf python3-config python-config
+	&& ln -sf python3-config python-config \
+  # Update pip and setuptools.
+  && pip install -U pip setuptools
 
 CMD ["python"]
