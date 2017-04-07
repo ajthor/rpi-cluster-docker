@@ -4,11 +4,13 @@ This repo contains salt configuration scripts that help maintain docker on a Ras
 
 Take a look at [rpi-cluster](https://github.com/ajthor/rpi-cluster) for more information on the Raspberry Pi Cluster project and the [rpi-cluster wiki](https://github.com/ajthor/rpi-cluster/wiki) for more information on how to set up your own Raspberry Pi cluster.
 
-## Salt Scripts
+## Salt Stack Fomulas
 
-This repo contains Salt scripts for configuring Docker and for starting swarm mode on the nodes. See the [wiki](https://github.com/ajthor/rpi-cluster-docker/wiki) for more information.
+This repo contains Salt Formulas for configuring Docker and for starting swarm mode on the nodes. See the [wiki](https://github.com/ajthor/rpi-cluster-docker/wiki) for more information.
 
 - [Swarm](https://github.com/ajthor/rpi-cluster-docker/wiki/Swarm)
+- [Docker Images](https://github.com/ajthor/rpi-cluster-docker/wiki/Docker-Images)
+- [Registry](https://github.com/ajthor/rpi-cluster-docker/wiki/Registry)
 
 ---
 
