@@ -1,90 +1,31 @@
 FROM rpi-cluster/alpine
 
-ENV LANG=en_US.UTF-8 \
-    APP_DIR=/srv/app \
-    HOME=/root \
-    PROFILE=/root/.bash_profile \
-    PYENV_ROOT=/root/.pyenv \
-    PATH=/root/.pyenv/shims:/root/.pyenv/bin:$PATH
+ENV PYTHON_VERSION=3.6.0 \
+    PYTHON_PIP_VERSION=9.0.1
 
 RUN apk add --no-cache \
     ca-certificates \
-    git \
-    g++ \
-    gcc \
-    glib-dev \
-		gdbm-dev \
-		libc-dev \
-    linux-headers \
-    grep \
-    gnupg \
-    tar \
-    patch
-
-RUN apk add --no-cache --virtual .build-deps \
+  && apk add --no-cache --virtual .build-deps \
     curl \
-    bash \
-    bzip2-dev \
-    openssl \
-    openssl-dev \
-    readline-dev \
-    sqlite-dev \
-    pax-utils \
-    build-base \
-    make \
-    gettext \
-    sqlite-dev \
-    zlib-dev \
-    wget \
-    llvm \
-    ncurses-dev \
-    ncurses5-libs \
-		tcl-dev \
-		tk \
-		tk-dev \
-		xz-dev \
-		zlib-dev
-# RUN apk add --no-cache \
-#     curl \
-#     ca-certificates \
-#     bash \
-#     git \
-#     openssl-dev \
-#     readline-dev \
-#     bzip2-dev \
-#     sqlite-dev \
-#     ncurses-dev \
-#     linux-headers \
-#     build-base
+    libffi \
+		libgcc \
+    libstdc++ \
+    libuv \
+    libcrypto1.0 \
+    libssl1.0
 
-		# autoconf \
-    # build-base \
-    # curl \
-		# libevent-dev \
-		# libffi-dev \
-    # libpq \
-    # libxml2-dev \
-    # libxslt-dev \
-    # linux-headers \
-		# ncurses5-libs \
-    # make \
-    # patch \
-    # openssl \
-    # openssl-dev \
-		# readline-dev \
-		# sqlite-dev \
-		# yaml-dev \
-		# zlib-dev \
-		# xz
+# Install Python.
+RUN curl -SLO "http://resin-packages.s3.amazonaws.com/python/v$PYTHON_VERSION/Python-$PYTHON_VERSION.linux-alpine-armhf.tar.gz" \
+	&& echo "01e9faafa87d5f5ca49d50971a4a1eead18982f9e2cd01880a3651a1bdbfc9f1  Python-3.6.0.linux-alpine-armhf.tar.gz" | sha256sum -c - \
+	&& tar -xzf "Python-$PYTHON_VERSION.linux-alpine-armhf.tar.gz" --strip-components=1 \
+	&& rm "Python-$PYTHON_VERSION.linux-alpine-armhf.tar.gz" \
+  && pip install -U pip setuptools \
+  && cd /usr/local/bin \
+	&& ln -sf pip3 pip \
+	&& ln -sf easy_install-3.6 easy_install \
+	&& ln -sf idle3 idle \
+	&& ln -sf pydoc3 pydoc \
+	&& ln -sf python3 python \
+	&& ln -sf python3-config python-config
 
-RUN curl -L https://raw.githubusercontent.com/pyenv/pyenv-installer/master/bin/pyenv-installer | bash \
-    && pyenv update
-
-RUN touch $PROFILE \
-    && echo 'export PATH="/root/.pyenv/bin:$PATH"' >> $PROFILE \
-    && echo 'eval "$(pyenv init -)"' >> $PROFILE \
-    && echo 'eval "$(pyenv virtualenv-init -)"' >> $PROFILE
-
-RUN pyenv install --verbose 3.5.2
-
-RUN apk del .build-deps
+CMD ["python"]
