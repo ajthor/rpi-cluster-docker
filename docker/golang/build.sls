@@ -5,7 +5,7 @@
 
 {% if not salt['pillar.get']('docker:use_external_images', false) %}
 {% set tag = salt['pillar.get']('docker:images:golang:tag') %}
-{% set sha1 = salt['pillar.get']('docker:images:golang:sha1') %}
+{% set sha256 = salt['pillar.get']('docker:images:golang:sha256') %}
 {% set base_image = salt['pillar.get']('docker:images:base_image:tag') %}
 
 {% set tmpdir = '/tmp/docker/rpi-cluster/golang' %}
@@ -19,7 +19,7 @@
     - defaults:
       version: {{ version }}
       base_image: {{ base_image }}
-      sha1: {{ sha1 }}
+      sha256: {{ sha256 }}
 
 {{ tmpdir }}/go-wrapper:
   file.managed:

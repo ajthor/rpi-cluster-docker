@@ -8,7 +8,7 @@ RUN apk add --no-cache \
 
 RUN mkdir -p /usr/local/go \
 	&& curl -SLO "http://resin-packages.s3.amazonaws.com/golang/v$GO_VERSION/go$GO_VERSION.linux-alpine-armhf.tar.gz" \
-	&& echo "{{ sha1 }}  go$GO_VERSION.linux-alpine-armhf.tar.gz" | sha256sum -c - \
+	&& echo "{{ sha256 }}  go$GO_VERSION.linux-alpine-armhf.tar.gz" | sha256sum -c - \
 	&& tar -xzf "go$GO_VERSION.linux-alpine-armhf.tar.gz" -C /usr/local/go --strip-components=1 \
 	&& rm -f go$GO_VERSION.linux-alpine-armhf.tar.gz
 
