@@ -2,6 +2,13 @@ docker:
   images:
     # Set the images to use, either locally built images or images pulled from
     # Docker Hub.
+
+    # Change the base_image tag to point to the image you want to use as the
+    # basis for all subsequent builds. By default, this image is the Alpine
+    # Linux image created by the docker.alpine.build function.
+    - base_image:
+      - tag: rpi-cluster/alpine
+
     - alpine:
       - tag: rpi-cluster/alpine
       - ext_tag: resin/raspberrypi3-alpine
