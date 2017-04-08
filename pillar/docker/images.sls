@@ -16,6 +16,10 @@ docker:
       # You only need to specify this if the `use_external_images` is `True`.
       - rootfs_url: https://nl.alpinelinux.org/alpine/v3.5/releases/armhf/alpine-minirootfs-3.5.2-armhf.tar.gz
 
+    # This is the raspbian image taken from resin's official docker hub image.
+    - raspbian:
+      - tag: resin/rpi-raspbian
+
     - node:
       - tag: rpi-cluster/node
       - ext_tag: resin/raspberrypi3-alpine-node
@@ -37,6 +41,7 @@ docker:
       - version: 1.8
       - sha256: d9759ca7bef54e6ca4da6fc690481c51604ded60ad2265facf1986121bcc1fa0
 
+    # Docker registry image, used to distribute built images among the cluster.
     - registry:
       - tag: rpi-cluster/registry
       - ext_tag: vdavy/registry-arm
