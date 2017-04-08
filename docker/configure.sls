@@ -5,7 +5,7 @@
 {% set master_hostname = salt['pillar.get']('config:master_hostname', 'rpi-master.local') %}
 
 # Add registry configuration.
-# {% if salt['pillar.get']('docker:use_tls', true) %}
+{% if salt['pillar.get']('docker:use_tls', true) %}
 
 # Install pip packages.
 pyopenssl:
