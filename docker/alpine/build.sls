@@ -1,6 +1,6 @@
 # This file builds a local alpine linux box from scratch.
 
-{% set version = salt['pillar.get']('docker:images:base_image:version') %}
+{% set version = salt['pillar.get']('docker:images:alpine:version') %}
 
 {% if not salt['pillar.get']('docker:use_external_images', false) %}
 {% set tag = salt['pillar.get']('docker:images:alpine:tag') %}

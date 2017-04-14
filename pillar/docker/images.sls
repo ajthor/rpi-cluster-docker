@@ -23,7 +23,7 @@ docker:
     - node:
       - tag: rpi-cluster/node
       - ext_tag: resin/raspberrypi3-alpine-node
-      - version: 7.8.0
+      - version: 7.7.3
       - sha256: 498357b1094b15943161ff591482f65b82e0a6b1eee9667cbf94996d64af340b
 
     - python:

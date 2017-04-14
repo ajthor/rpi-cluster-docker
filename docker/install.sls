@@ -14,3 +14,10 @@ sh bootstrap-docker.sh:
     - unless: which docker
     - require:
       - cmd: curl -o bootstrap-docker.sh -sSL https://get.docker.com
+
+# Install pip packages.
+docker-py:
+  pip.installed
+
+docker-compose:
+  pip.installed
