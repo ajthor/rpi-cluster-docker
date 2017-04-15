@@ -19,7 +19,7 @@
 
 # Copy files to {{ tempdir }}.
 {{ tempdir }}/build.sh:
-  cmd.script:
+  file.managed:
     - source: salt://docker/registry/build.sh
     - template: jinja
     - defaults:
