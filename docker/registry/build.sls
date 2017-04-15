@@ -20,6 +20,7 @@
 # Copy files to {{ tempdir }}.
 {{ tempdir }}/build.sh:
   file.managed:
+    - name: {{ tempdir }}/build.sh
     - source: salt://docker/registry/build.sh
     - mode: 755
     - template: jinja
@@ -48,8 +49,9 @@
     - source: salt://docker/registry/docker-entrypoint.sh
     - mode: 755
 
-salt://docker/registry/build.sh:
+build:
   cmd.script:
+    - name: salt://docker/registry/build.sh
     - template: jinja
     - defaults:
       name: {{ name }}
