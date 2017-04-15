@@ -1,6 +1,6 @@
 #!/bin/sh
 
-IMAGE_NAME={{ name }}
+IMAGE_NAME={{ image }}
 IMAGE_TAG={{ tag }}
 
 TEMPDIR={{ tempdir }}
