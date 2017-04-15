@@ -14,6 +14,7 @@ docker build -t $IMAGE_NAME:build . -f Dockerfile.build
 docker create --name builder $IMAGE_NAME:build
 
 # Copy the binaries from the builder.
+mkdir $TEMPDIR/registry
 docker cp builder:/go/bin/registry $TEMPDIR/registry/registry
 docker cp builder:/go/src/github.com/docker/distribution/cmd/registry/config-example.yml $TEMPDIR/registry/config-example.yml
 

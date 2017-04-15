@@ -12,7 +12,7 @@
 
 {% if not salt['pillar.get']('docker:use_external_images', false) %}
 
-{% set name = salt['pillar.get']('docker:images:registry:name', 'registry') %}
+{% set name = salt['pillar.get']('docker:images:registry:name', 'rpi-cluster/registry') %}
 {% set tag = salt['pillar.get']('docker:images:registry:tag') %}
 
 {% set tempdir = salt['cmd.run']('mktemp -d -t builder.XXXXXX') %}
@@ -47,10 +47,10 @@ salt://docker/registry/build.sh:
       tempdir: {{ tempdir }}
 
 {% else %}
-{% set name = salt['pillar.get']('docker:images:registry:ext') %}
+{% set ext_name = salt['pillar.get']('docker:images:registry:ext_name') %}
 {% set tag = salt['pillar.get']('docker:images:registry:tag') %}
 
-{{ name }}:{{ tag }}:
+{{ ext_name }}:{{ tag }}:
   dockerng.image_present
 
 {% endif %}

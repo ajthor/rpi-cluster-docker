@@ -3,11 +3,11 @@
 # https://docs.docker.com/registry/#tldr for more info.
 
 
-{%- set tag = salt['pillar.get']('docker:images:registry:tag', 'rpi-cluster/registry') -%}
-{%- set version = salt['pillar.get']('docker:images:registry:version', '2.6.1') %}
+{% set name = salt['pillar.get']('docker:images:registry:name', 'rpi-cluster/registry') -%}
+{% set tag = salt['pillar.get']('docker:images:registry:tag') %}
 
 # Make sure the registry image is present.
-{{ tag }}:{{ version }}:
+{{ name }}:{{ tag }}:
   dockerng.image_present
 
 build-registry:
@@ -15,11 +15,11 @@ build-registry:
     - sls: docker.registry.build
     - tgt: {{ salt['pillar.get']('config:master_hostname', 'rpi-master') }}
     - onfail:
-      - dockerng: {{ tag }}:{{ version }}
+      - dockerng: {{ name }}:{{ tag }}
 
 registry:
   dockerng.running:
-    - image: {{ tag }}:{{ version }}
+    - image: {{ name }}:{{ tag }}
     - detach: True
     - ports:
       - 5000
