@@ -18,6 +18,15 @@
 {% set tempdir = salt['cmd.run']('mktemp -d -t builder.XXXXXX') %}
 
 # Copy files to {{ tempdir }}.
+{{ tempdir }}/build.sh:
+  cmd.script:
+    - source: salt://docker/registry/build.sh
+    - template: jinja
+    - defaults:
+      image: {{ image }}
+      tag: {{ tag }}
+      tempdir: {{ tempdir }}
+
 {{ tempdir }}/Dockerfile:
   file.managed:
     - source: salt://docker/registry/Dockerfile
