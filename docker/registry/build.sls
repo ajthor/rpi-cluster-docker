@@ -6,61 +6,51 @@
 # https://github.com/docker/distribution
 # https://github.com/docker/distribution-library-image
 
-{% set version = salt['pillar.get']('docker:images:registry:version', '2.6.1') %}
+{% set base = salt['pillar.get']('docker:images:base:name') %}
+{% set golang_name = salt['pillar.get']('docker:images:golang:name') %}
+{% set golang_tag = salt['pillar.get']('docker:images:golang:tag') %}
 
 {% if not salt['pillar.get']('docker:use_external_images', false) %}
+
+{% set name = salt['pillar.get']('docker:images:registry:name', 'registry') %}
 {% set tag = salt['pillar.get']('docker:images:registry:tag') %}
-{% set base_image = salt['pillar.get']('docker:images:base_image:tag') %}
 
-{%- set tmpdir = '/tmp/docker/rpi-cluster/registry' %}
+{% set tempdir = salt['cmd.run']('mktemp -d -t builder.XXXXXX') %}
 
-# First, we need to create the registry binary, which we will use in our new
-# registry image.
-create-registry-binary:
-  salt.state:
-    - sls: docker.registry.distribution
-    - tgt: {{ salt['pillar.get']('config:master_hostname', 'rpi-master') }}
-
-# Now that we have the registry binary from the builder, we can go through the
-# process of creating our own registry image. We need to copy the entrypoint
-# file and the Dockerfile over to the temporary directory and build our new
-# image.
-
-# Copy files to temp dir.
-{{ tmpdir }}/Dockerfile:
+# Copy files to {{ tempdir }}.
+{{ tempdir }}/Dockerfile:
   file.managed:
     - source: salt://docker/registry/Dockerfile
-    - makedirs: True
     - template: jinja
     - defaults:
-      base_image: {{ base_image }}
+      base: {{ base }}
+      tempdir: {{ tempdir }}
 
-{{ tmpdir }}/docker-entrypoint.sh:
+{{ tempdir }}/Dockerfile.build:
+  file.managed:
+    - source: salt://docker/registry/Dockerfile.build
+    - template: jinja
+    - defaults:
+      base: {{ golang_name }}:{{ golang_tag }}
+
+{{ tempdir }}/docker-entrypoint.sh:
   file.managed:
     - source: salt://docker/registry/docker-entrypoint.sh
-    - makedirs: True
     - mode: 755
 
-{{ tag }}:{{ version }}:
-  dockerng.image_present:
-    - build: {{ tmpdir }}
-    - onchanges:
-      - salt: create-registry-binary
-      - file: {{ tmpdir }}/Dockerfile
-      - file: {{ tmpdir }}/docker-entrypoint.sh
-
-{{ tag }}:latest:
-  dockerng.image_present:
-    - build: {{ tmpdir }}
-    - onchanges:
-      - salt: create-registry-binary
-      - file: {{ tmpdir }}/Dockerfile
-      - file: {{ tmpdir }}/docker-entrypoint.sh
+salt://docker/registry/build.sh:
+  cmd.script:
+    - template: jinja
+    - defaults:
+      account: {{ account }}
+      tag: {{ tag }}
+      tempdir: {{ tempdir }}
 
 {% else %}
-{% set tag = salt['pillar.get']('docker:images:registry:ext_tag') %}
+{% set name = salt['pillar.get']('docker:images:registry:ext') %}
+{% set tag = salt['pillar.get']('docker:images:registry:tag') %}
 
-{{ tag }}:{{ version }}:
+{{ name }}:{{ tag }}:
   dockerng.image_present
 
 {% endif %}
