@@ -40,6 +40,7 @@
 
 salt://docker/registry/build.sh:
   cmd.script:
+    - cwd: {{ tempdir }}
     - template: jinja
     - defaults:
       image: {{ image }}
