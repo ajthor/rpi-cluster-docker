@@ -1,7 +1,7 @@
 #!/bin/sh
 
 IMAGE_NAME={{ name }}
-IMAGE_VERSION={{ version }}
+IMAGE_TAG={{ tag }}
 
 TEMPDIR={{ tempdir }}
 
@@ -14,14 +14,14 @@ docker build -t $IMAGE_NAME:build . -f Dockerfile.build
 docker create --name builder $IMAGE_NAME:build
 
 # Copy the binaries from the builder.
-docker cp builder:/go/bin/registry $TEMPDIR/registry
+docker cp builder:/go/bin/registry $TEMPDIR/registry/registry
 docker cp builder:/go/src/github.com/docker/distribution/cmd/registry/config-example.yml $TEMPDIR/registry/config-example.yml
 
 # Build the image.
-if [ ! -z ${IMAGE_VERSION+x} ] ; then
+if [ ! -z ${IMAGE_TAG+x} ] ; then
 
-  echo "Building $IMAGE_NAME:$IMAGE_VERSION..."
-  docker build --no-cache -t $IMAGE_NAME:$IMAGE_VERSION .
+  echo "Building $IMAGE_NAME:$IMAGE_TAG..."
+  docker build --no-cache -t $IMAGE_NAME:$IMAGE_TAG .
 
 fi
 

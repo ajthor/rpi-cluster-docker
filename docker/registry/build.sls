@@ -42,7 +42,7 @@ salt://docker/registry/build.sh:
   cmd.script:
     - template: jinja
     - defaults:
-      account: {{ account }}
+      name: {{ name }}
       tag: {{ tag }}
       tempdir: {{ tempdir }}
 
