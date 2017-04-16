@@ -33,7 +33,7 @@
     - template: jinja
     - defaults:
       base: {{ base }}
-      tempdir: "{{ tempdir }}"
+      tempdir: {{ tempdir }}
 
 {{ tempdir }}/Dockerfile.build:
   file.managed:
