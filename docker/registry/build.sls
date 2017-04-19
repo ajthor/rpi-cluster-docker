@@ -6,13 +6,13 @@
 # https://github.com/docker/distribution
 # https://github.com/docker/distribution-library-image
 
-{% set version = salt['pillar.get']('docker:images:registry:version', '2.6.1') %}
+{% set tag = salt['pillar.get']('docker:images:registry:tag') %}
 
 {% if not salt['pillar.get']('docker:use_external_images', false) %}
-{% set tag = salt['pillar.get']('docker:images:registry:tag') %}
-{% set base_image = salt['pillar.get']('docker:images:base_image:tag') %}
+{% set image = salt['pillar.get']('docker:images:registry:image') %}
+{% set base = salt['pillar.get']('docker:images:base:image') %}
 
-{%- set tmpdir = '/tmp/docker/rpi-cluster/registry' %}
+{% set tempdir = '/tmp/docker/rpi-cluster/registry' %}
 
 # First, we need to create the registry binary, which we will use in our new
 # registry image.
@@ -27,40 +27,42 @@ create-registry-binary:
 # image.
 
 # Copy files to temp dir.
-{{ tmpdir }}/Dockerfile:
+{{ tempdir }}/Dockerfile:
   file.managed:
     - source: salt://docker/registry/Dockerfile
     - makedirs: True
     - template: jinja
     - defaults:
-      base_image: {{ base_image }}
+      base: {{ base }}
 
-{{ tmpdir }}/docker-entrypoint.sh:
+{{ tempdir }}/docker-entrypoint.sh:
   file.managed:
     - source: salt://docker/registry/docker-entrypoint.sh
     - makedirs: True
     - mode: 755
 
-{{ tag }}:{{ version }}:
+{% if tag is defined %}
+{{ image }}:{{ tag }}:
   dockerng.image_present:
-    - build: {{ tmpdir }}
+    - build: {{ tempdir }}
     - onchanges:
       - salt: create-registry-binary
-      - file: {{ tmpdir }}/Dockerfile
-      - file: {{ tmpdir }}/docker-entrypoint.sh
+      - file: {{ tempdir }}/Dockerfile
+      - file: {{ tempdir }}/docker-entrypoint.sh
+{% endif %}
 
-{{ tag }}:latest:
+{{ image }}:latest:
   dockerng.image_present:
-    - build: {{ tmpdir }}
+    - build: {{ tempdir }}
     - onchanges:
       - salt: create-registry-binary
-      - file: {{ tmpdir }}/Dockerfile
-      - file: {{ tmpdir }}/docker-entrypoint.sh
+      - file: {{ tempdir }}/Dockerfile
+      - file: {{ tempdir }}/docker-entrypoint.sh
 
 {% else %}
-{% set tag = salt['pillar.get']('docker:images:registry:ext_tag') %}
+{% set image = salt['pillar.get']('docker:images:registry:ext_image') %}
 
-{{ tag }}:{{ version }}:
+{{ image }}:{{ tag }}:
   dockerng.image_present
 
 {% endif %}

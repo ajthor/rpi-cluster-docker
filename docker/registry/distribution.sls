@@ -3,14 +3,14 @@
 # a salt version of the update script found in the registry image repo.
 # https://github.com/docker/distribution-library-image
 
-{% set golang_tag = salt['pillar.get']('docker:images:golang:tag', 'rpi-cluster/golang') %}
-{% set golang_version = salt['pillar.get']('docker:images:golang:version', '1.8') %}
+{% set golang_image = salt['pillar.get']('docker:images:golang:image') %}
+{% set golang_tag = salt['pillar.get']('docker:images:golang:tag') %}
 
-{%- set tmpdir = '/tmp/docker/rpi-cluster/registry' %}
-{%- set tmpdir_builder = '/tmp/docker/rpi-cluster/registry_builder' %}
+{% set tempdir = '/tmp/docker/rpi-cluster/registry' %}
+{% set tempdir_builder = salt['cmd.run']('mktemp -d -t registry_builder.XXXXXX') %}
 
 # Make sure the golang image is present.
-{{ golang_tag }}:{{ golang_version }}:
+{{ golang_image }}:{{ golang_tag }}:
   dockerng.image_present
 
 build-golang:
@@ -18,25 +18,25 @@ build-golang:
     - sls: docker.golang.build
     - tgt: {{ salt['pillar.get']('config:master_hostname', 'rpi-master') }}
     - onfail:
-      - dockerng: {{ golang_tag }}:{{ golang_version }}
+      - dockerng: {{ golang_image }}:{{ golang_tag }}
 
 # Clone the Git repo that contains the scripts and files for the registry image.
 https://github.com/docker/distribution:
   git.latest:
-    - target: {{ tmpdir_builder }}
+    - target: {{ tempdir_builder }}
 
 # Change Dockerfile to use our golang base image.
 replace-base-image:
   file.replace:
-    - name: {{ tmpdir_builder }}/Dockerfile
+    - name: {{ tempdir_builder }}/Dockerfile
     - pattern: FROM[^\n]*?(?=\n)
-    - repl: FROM {{ golang_tag }}:{{ golang_version }}
+    - repl: FROM {{ golang_image }}:{{ golang_tag }}
     - require:
       - git: https://github.com/docker/distribution
 
 replace-config-file:
   file.replace:
-    - name: {{ tmpdir_builder }}/Dockerfile
+    - name: {{ tempdir_builder }}/Dockerfile
     - pattern: COPY cmd/registry/config-dev.yml
     - repl: COPY cmd/registry/config-example.yml
     - require:
@@ -45,7 +45,7 @@ replace-config-file:
 # Build the temporary distribution image.
 distribution:
   dockerng.image_present:
-    - build: {{ tmpdir_builder }}
+    - build: {{ tempdir_builder }}
     - require:
       - git: https://github.com/docker/distribution
       - file: replace-base-image
@@ -59,7 +59,7 @@ create-distribution-container:
       - dockerng: distribution
 
 # Make sure the temp directory exists.
-{{ tmpdir }}/registry:
+{{ tempdir }}/registry:
   file.directory:
     - makedirs: True
 
@@ -67,18 +67,18 @@ create-distribution-container:
 copy-registry:
   cmd.run:
     - name: docker cp builder:/go/bin/registry registry
-    - cwd: {{ tmpdir }}/registry
+    - cwd: {{ tempdir }}/registry
     - require:
       - cmd: create-distribution-container
-      - file: {{ tmpdir }}/registry
+      - file: {{ tempdir }}/registry
 
 copy-config:
   cmd.run:
     - name: docker cp builder:/go/src/github.com/docker/distribution/cmd/registry/config-example.yml config-example.yml
-    - cwd: {{ tmpdir }}/registry
+    - cwd: {{ tempdir }}/registry
     - require:
       - cmd: create-distribution-container
-      - file: {{ tmpdir }}/registry
+      - file: {{ tempdir }}/registry
 
 # Remove the distribution container.
 builder:
