@@ -1,43 +1,49 @@
 # This file takes the image from docker-library and builds it specifically
 # using our base alpine image.
 
-{% set version = salt['pillar.get']('docker:images:node:version', '7.8.0') %}
+{% set tag = salt['pillar.get']('docker:images:node:tag') %}
 
 {% if not salt['pillar.get']('docker:use_external_images', false) %}
-{% set tag = salt['pillar.get']('docker:images:node:tag') %}
-{% set sha256 = salt['pillar.get']('docker:images:node:sha256') %}
-{% set base_image = salt['pillar.get']('docker:images:base_image:tag') %}
 
-{% set tmpdir = '/tmp/docker/rpi-cluster/node' %}
+{% set image = salt['pillar.get']('docker:images:node:image') %}
+{% set download_url = salt['pillar.get']('docker:images:node:download_url') %}
+{% set sha256 = salt['pillar.get']('docker:images:node:sha256') %}
+
+{% set base = salt['pillar.get']('docker:images:base:image') %}
+
+{% set tempdir = salt['cmd.run']('mktemp -d -t node.XXXXXX') %}
 
 # Add the Dockerfile from repo.
-{{ tmpdir }}/Dockerfile:
+{{ tempdir }}/Dockerfile:
   file.managed:
     - source: salt://docker/node/Dockerfile
     - makedirs: True
     - template: jinja
     - defaults:
-      version: {{ version }}
-      base_image: {{ base_image }}
+      base: {{ base }}
+      tag: {{ tag }}
+      download_url: {{ download_url }}
       sha256: {{ sha256 }}
 
 # Build the image.
-{{ tag }}:{{ version }}:
+{% if tag is defined %}
+{{ image }}:{{ tag }}:
   dockerng.image_present:
-    - build: {{ tmpdir }}
+    - build: {{ tempdir }}
     - onchanges:
-      - file: {{ tmpdir }}/Dockerfile
+      - file: {{ tempdir }}/Dockerfile
+{% endif %}
 
-{{ tag }}:latest:
+{{ image }}:latest:
   dockerng.image_present:
-    - build: {{ tmpdir }}
+    - build: {{ tempdir }}
     - onchanges:
-      - file: {{ tmpdir }}/Dockerfile
+      - file: {{ tempdir }}/Dockerfile
 
 {% else %}
-{% set tag = salt['pillar.get']('docker:images:node:ext_tag') %}
+{% set image = salt['pillar.get']('docker:images:node:ext_image') %}
 
-{{ tag }}:{{ version }}:
+{{ image }}:{{ tag }}:
   dockerng.image_present
 
 {% endif %}

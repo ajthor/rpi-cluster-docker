@@ -1,6 +1,8 @@
-FROM {{ base_image }}
+FROM {{ base }}
 
-ENV PYTHON_VERSION {{ version }}
+ENV PYTHON_VERSION {{ tag }}
+ENV PYTHON_DOWNLOAD_URL {{ download_url }}
+ENV PYTHON_SHA256 {{ sha256 }}
 
 RUN apk add --no-cache \
     ca-certificates \
@@ -14,8 +16,8 @@ RUN apk add --no-cache \
     libssl1.0
 
 # Install Python.
-RUN curl -SLO "http://resin-packages.s3.amazonaws.com/python/v$PYTHON_VERSION/Python-$PYTHON_VERSION.linux-alpine-armhf.tar.gz" \
-	&& echo "{{ sha256 }}  Python-3.6.0.linux-alpine-armhf.tar.gz" | sha256sum -c - \
+RUN curl -SLO "$PYTHON_DOWNLOAD_URL" \
+	&& echo "$PYTHON_SHA256  Python-$PYTHON_VERSION.linux-alpine-armhf.tar.gz" | sha256sum -c - \
 	&& tar -xzf "Python-$PYTHON_VERSION.linux-alpine-armhf.tar.gz" --strip-components=1 \
 	&& rm "Python-$PYTHON_VERSION.linux-alpine-armhf.tar.gz" \
   # Set useful symlinks.

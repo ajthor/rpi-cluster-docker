@@ -12,19 +12,9 @@
 {% set image = salt['pillar.get']('docker:images:registry:image') %}
 {% set base = salt['pillar.get']('docker:images:base:image') %}
 
-{% set tempdir = '/tmp/docker/rpi-cluster/registry' %}
+{% set tempdir = salt['cmd.run']('mktemp -d -t registry.XXXXXX') %}
 
-# First, we need to create the registry binary, which we will use in our new
-# registry image.
-create-registry-binary:
-  salt.state:
-    - sls: docker.registry.distribution
-    - tgt: {{ salt['pillar.get']('config:master_hostname', 'rpi-master') }}
-
-# Now that we have the registry binary from the builder, we can go through the
-# process of creating our own registry image. We need to copy the entrypoint
-# file and the Dockerfile over to the temporary directory and build our new
-# image.
+# We need to copy the entrypoint file and the Dockerfile over to the temporary directory and build our new image.
 
 # Copy files to temp dir.
 {{ tempdir }}/Dockerfile:
