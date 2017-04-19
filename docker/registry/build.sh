@@ -10,6 +10,13 @@ echo "Building $IMAGE_NAME:build..."
 # Build the builder.
 docker build -t $IMAGE_NAME:build . -f Dockerfile.build
 
+# Make sure the last command completed successfully.
+if [ "$?" -eq 0 ]; then
+  echo "done"
+else
+  echo "$IMAGE_NAME:build failed"
+  exit "$?"
+fi
 # Create a temporary container to extract binaries.
 docker create --name builder $IMAGE_NAME:build
 
@@ -25,7 +32,7 @@ docker build --no-cache -t $IMAGE_NAME:latest .
 
 # Make sure the last command completed successfully.
 if [ "$?" -eq 0 ]; then
-  
+
   if [ ! -z ${IMAGE_TAG+x} ] ; then
     echo "Building $IMAGE_NAME:$IMAGE_TAG..."
     docker build --no-cache -t $IMAGE_NAME:$IMAGE_TAG .
@@ -39,6 +46,7 @@ if [ "$?" -eq 0 ]; then
   docker rmi $IMAGE_NAME:build
 
 else
+  echo "$IMAGE_NAME:latest failed"
   exit "$?"
 
 fi

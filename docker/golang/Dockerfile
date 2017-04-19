@@ -1,16 +1,19 @@
 FROM {{ base_image }}
 
 ENV GO_VERSION {{ version }}
+ENV GO_DOWNLOAD_URL {{ download_url }}
+ENV GO_SHA256 {{ sha256 }}
 
 # Install dependencies
-RUN apk add --no-cache \
+RUN apk add --no-cache --virtual .build-deps \
     curl
 
 RUN mkdir -p /usr/local/go \
-	&& curl -SLO "http://resin-packages.s3.amazonaws.com/golang/v$GO_VERSION/go$GO_VERSION.linux-alpine-armhf.tar.gz" \
-	&& echo "{{ sha256 }}  go$GO_VERSION.linux-alpine-armhf.tar.gz" | sha256sum -c - \
+	&& curl -SLO "$GO_DOWNLOAD_URL" \
+	&& echo "$GO_SHA256  go$GO_VERSION.linux-alpine-armhf.tar.gz" | sha256sum -c - \
 	&& tar -xzf "go$GO_VERSION.linux-alpine-armhf.tar.gz" -C /usr/local/go --strip-components=1 \
-	&& rm -f go$GO_VERSION.linux-alpine-armhf.tar.gz
+	&& rm -f go$GO_VERSION.linux-alpine-armhf.tar.gz \
+  && apk del .build-deps
 
 ENV GOROOT /usr/local/go
 ENV GOPATH /go
