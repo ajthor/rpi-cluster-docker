@@ -36,7 +36,6 @@
   dockerng.image_present:
     - build: {{ tempdir }}
     - onchanges:
-      - salt: create-registry-binary
       - file: {{ tempdir }}/Dockerfile
       - file: {{ tempdir }}/docker-entrypoint.sh
 {% endif %}
@@ -45,7 +44,6 @@
   dockerng.image_present:
     - build: {{ tempdir }}
     - onchanges:
-      - salt: create-registry-binary
       - file: {{ tempdir }}/Dockerfile
       - file: {{ tempdir }}/docker-entrypoint.sh
 
