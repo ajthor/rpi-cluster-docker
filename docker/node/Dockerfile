@@ -7,13 +7,13 @@ ENV NODE_SHA256 {{ sha256 }}
 # Install dependencies
 RUN apk add --no-cache \
     ca-certificates \
-    libstdc++ \
-  && apk add --no-cache --virtual .build-deps \
-    curl \
     libgcc \
+    libstdc++ \
     libuv \
     libcrypto1.0 \
-    libssl1.0
+    libssl1.0 \
+  && apk add --no-cache --virtual .build-deps \
+    curl
 
 RUN curl -SLO "$NODE_DOWNLOAD_URL" \
   	&& echo "$NODE_SHA256  node-v$NODE_VERSION-linux-alpine-armhf.tar.gz" | sha256sum -c - \
